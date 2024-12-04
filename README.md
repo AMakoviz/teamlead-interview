@@ -5,6 +5,8 @@
 
 Для установки или обновления воспользуйтесь официальной инструкцией, для вашей ОС https://docs.docker.com/engine/install/
 
+Для установки на windows https://docs.docker.com/desktop/setup/install/windows-install/
+
 
 ## Развертывание jira и postgres
 

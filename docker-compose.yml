@@ -1,4 +1,4 @@
-version: '3.8'
+#version: '3.8'
 
 services:
   postgres:
@@ -29,6 +29,7 @@ services:
       ATL_JDBC_PASSWORD: jirapassword
       JVM_MINIMUM_MEMORY: 1024M
       JVM_MAXIMUM_MEMORY: 2048M
+      JVM_SUPPORT_RECOMMENDED_ARGS: "-Dupm.plugin.upload.enabled=true"
     depends_on:
       - postgres
     volumes:
