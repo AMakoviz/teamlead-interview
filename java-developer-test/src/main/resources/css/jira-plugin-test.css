@@ -1,0 +1,17 @@
+.tl-input {
+	border: 1px solid #aaa;
+	border-radius: 4px;
+	margin: 10px 10px 0px 0px;
+}
+
+.tl-border {
+	padding-bottom: 10px;
+	margin-bottom: 10px;
+	border-bottom: 3px solid #ebecf0;
+}
+
+.tl-label {
+	color: #6B778C;
+	font-size: 12px;
+	font-weight: 600;
+}

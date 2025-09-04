@@ -1,5 +1,8 @@
 # Установка и настройка окружения jira data center
 
+## Задание для кандидата java developer
+Находится в каталоге java-developer-test 
+
 ## Установка Docker
 Для развертывания окружения jira, необходим docker CE версии >= 20.10.10 и compose.
 

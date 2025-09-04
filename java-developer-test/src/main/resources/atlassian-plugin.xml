@@ -1,0 +1,30 @@
+<atlassian-plugin key="${project.groupId}.${project.artifactId}" name="${project.name}" plugins-version="2">
+    <plugin-info>
+        <version>${project.version}</version>
+        <description>${project.description}</description>
+        <vendor name="${project.organization.name}" url="${project.organization.url}"/>
+    </plugin-info>
+
+    <resource type="i18n" name="i18n" location="jira-plugin-test"/>
+
+    <rest key="test-plugin-rest" path="/test-rest" version="1.0" name="Test Plugin Rest">
+        <description>Provides rest services</description>
+    </rest>
+
+    <web-panel key="tl-test-panel"
+               location="atl.jira.view.issue.right.context"
+               weight="100">
+        <label key="tl.test"/>
+        <resource name="view" type="velocity" location="/templates/my-web-panel.vm"/>
+    </web-panel>
+
+    <web-resource key="test-plugin-resources" name="Test-Plugin Web Resources">
+        <resource type="download" name="test-button.js" location="js/test-button.js"/>
+        <resource type="download" name="jira-plugin-test.css" location="/css/jira-plugin-test.css"/>
+        <dependency>com.atlassian.auiplugin:aui-select2</dependency>
+        <context>jira.view.issue</context>
+        <transformation extension="js">
+            <transformer key="jsI18n"/>
+        </transformation>
+    </web-resource>
+</atlassian-plugin>
