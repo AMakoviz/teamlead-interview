@@ -8,6 +8,7 @@ import com.atlassian.jira.event.type.EventDispatchOption;
 import com.atlassian.jira.issue.IssueInputParameters;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
+import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.util.UserManager;
 import com.atlassian.jira.util.I18nHelper;
@@ -43,6 +44,7 @@ public class MyRestResource {
     private final UserSearchService userSearchService;
     private final IssueService issueService;
     private final I18nHelper i18nHelper;
+    private final JiraAuthenticationContext authContext;
 
     /*
         https://aui.atlassian.com/aui/latest/docs/getting-started.html
@@ -52,12 +54,13 @@ public class MyRestResource {
     @Inject
     public MyRestResource(IssueManager issueManager,
                           UserManager userManager,
-                          I18nHelper i18nHelper) {
+                          I18nHelper i18nHelper, JiraAuthenticationContext authContext) {
         this.issueManager = issueManager;
         this.userManager = userManager;
         this.i18nHelper = i18nHelper;
         this.userSearchService = ComponentAccessor.getComponent(UserSearchService.class);
         this.issueService = ComponentAccessor.getIssueService();
+        this.authContext = authContext;
     }
 
     /**
@@ -78,7 +81,7 @@ public class MyRestResource {
         SelectOptionDTO selectOptionDTO = new SelectOptionDTO();
         List<SelectOptionDTO> options = new ArrayList<>();
         for (ApplicationUser user : users) {
-            options.add(new SelectOptionDTO(user.getKey(), user.getDisplayName()));
+            options.add(new SelectOptionDTO(user.getName(), user.getDisplayName()));
         }
 
         selectOptionDTO.setOptions(options);
@@ -120,7 +123,7 @@ public class MyRestResource {
     @POST
     @Path("/assign")
     public Response assignUserToIssue(UpdateRequestDTO request) {
-        ApplicationUser assignee = userManager.getUserByKey(request.getUserKey());
+        ApplicationUser assignee = userManager.getUserByName(request.getUserKey());
 
         if (assignee == null) {
             log.error("#TEST user not found!!!");
@@ -132,7 +135,7 @@ public class MyRestResource {
         ApplicationUser currentUser = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
 
         IssueInputParameters input = issueService.newIssueInputParameters();
-        input.setAssigneeId(String.valueOf(assignee.getId()));
+        input.setAssigneeId(assignee.getName());
         input.setComment(i18nHelper.getText("tl.issue.updated.assignee"));
 
         IssueService.UpdateValidationResult validationResult = issueService.validateUpdate(currentUser, issue.getId(), input);
@@ -143,7 +146,7 @@ public class MyRestResource {
         }
 
         IssueService.IssueResult updateResult = issueService.update(currentUser, validationResult, EventDispatchOption.DO_NOT_DISPATCH, false);
-        if (updateResult.isValid()) {
+        if (!updateResult.isValid()) {
             log.error("#TEST updateResult: !validationResult.isValid():" + updateResult.getErrorCollection().toString());
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(updateResult.getErrorCollection().toString()).build();
@@ -151,4 +154,64 @@ public class MyRestResource {
 
         return Response.ok().build();
     }
+    @POST
+    @Path("/updateSummary")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response updateSummary(final UpdateSummaryRequest request) {
+        if (request == null) {
+            log.error("#TEST updateSummary request is NULL");
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Request body is null").build();
+        }
+        log.info("#TEST updateSummary request: issueKey=" + request.getIssueKey()
+                + ", summary=" + request.getSummary());
+
+        ApplicationUser user = authContext.getLoggedInUser();
+        IssueService.IssueResult issueResult = issueService.getIssue(user, request.getIssueKey());
+
+        if (!issueResult.isValid()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Invalid issue key: " + request.getIssueKey())
+                    .build();
+        }
+
+
+
+        IssueInputParameters params = issueService.newIssueInputParameters();
+        params.setSummary(request.getSummary());
+        params.setRetainExistingValuesWhenParameterNotProvided(true);
+
+        IssueService.UpdateValidationResult validation =
+                issueService.validateUpdate(user, issueResult.getIssue().getId(), params);
+
+        if (!validation.isValid()) {
+            log.error("#TEST validation errors: " + validation.getErrorCollection());
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(validation.getErrorCollection().toString())
+                    .build();
+        }
+        IssueService.IssueResult updateResult =
+                issueService.update(user, validation, EventDispatchOption.ISSUE_UPDATED, false);
+        if (!updateResult.isValid()) {
+            log.error("#TEST update errors: " + updateResult.getErrorCollection());
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(updateResult.getErrorCollection().toString())
+                    .build();
+        }
+        Map<String, Object> result = new HashMap<>();
+        result.put("status", "ok");
+        result.put("newSummary", request.getSummary());
+        return Response.ok(result).build();
+    }
+    public static class UpdateSummaryRequest {
+        private String issueKey;
+        private String summary;
+        public UpdateSummaryRequest() {}
+
+        public String getIssueKey() { return issueKey; }
+        public void setIssueKey(String issueKey) { this.issueKey = issueKey; }
+        public String getSummary() { return summary; }
+        public void setSummary(String summary) { this.summary = summary; }
+    }
+
 }

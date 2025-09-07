@@ -12,6 +12,11 @@
       <option name="url" value="https://maven.atlassian.com/repository/public" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="atlassian-3rd-party" />
+      <option name="name" value="atlassian-3rd-party" />
+      <option name="url" value="https://packages.atlassian.com/maven/3rdparty" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="atlassian-plugin-sdk" />
       <option name="name" value="atlassian-plugin-sdk" />
       <option name="url" value="file://C:\Applications\Atlassian\atlassian-plugin-sdk-8.2.7/repository" />
@@ -25,6 +30,11 @@
       <option name="id" value="jboss.community" />
       <option name="name" value="JBoss Community repository" />
       <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="atlassian-public" />
+      <option name="name" value="atlassian-public" />
+      <option name="url" value="https://packages.atlassian.com/maven/public" />
     </remote-repository>
   </component>
 </project>

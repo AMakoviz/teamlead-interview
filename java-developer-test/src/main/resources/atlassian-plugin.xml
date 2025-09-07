@@ -21,7 +21,9 @@
     <web-resource key="test-plugin-resources" name="Test-Plugin Web Resources">
         <resource type="download" name="test-button.js" location="js/test-button.js"/>
         <resource type="download" name="jira-plugin-test.css" location="/css/jira-plugin-test.css"/>
+        <dependency>com.atlassian.auiplugin:ajs</dependency>
         <dependency>com.atlassian.auiplugin:aui-select2</dependency>
+        <dependency>com.atlassian.auiplugin:dialog2</dependency>
         <context>jira.view.issue</context>
         <transformation extension="js">
             <transformer key="jsI18n"/>
