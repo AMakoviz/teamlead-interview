@@ -1,0 +1,4 @@
+com\example\plugin\dto\SelectOptionDTO.class
+com\example\plugin\api\MyRestResource$UpdateSummaryRequest.class
+com\example\plugin\api\MyRestResource.class
+com\example\plugin\dto\UpdateRequestDTO.class
