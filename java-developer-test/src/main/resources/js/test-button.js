@@ -178,11 +178,10 @@ function initUsersDropdown() {
 
 function updateSummary() {
 
-	console.log("⚡ updateSummary called");
+
 	var summary = jQuery("#tl-summary").val().trim();
 	var issueKey = JIRA.Issue.getIssueKey();
 
-	console.log("⚡ issueKey =", issueKey);
 
 	if (summary.length < 5 || summary.length > 100) {
 		JIRA.Messages.showErrorMsg(
@@ -191,10 +190,6 @@ function updateSummary() {
 		);
 		return;
 	}
-	console.log("⚡ sending ajax", {
-		issueKey: issueKey,
-		summary: summary
-	});
 
 	jQuery.ajax({
 		url: AJS.contextPath() + "/rest/test-rest/1.0/test-plugin/updateSummary",
@@ -205,7 +200,6 @@ function updateSummary() {
 			summary: summary
 		}),
 		success: function(response) {
-			console.log("Update summary SUCCESS:", response);
 			JIRA.Messages.showSuccessMsg(
 				AJS.I18n.getText("tl.response.success") || "Summary updated successfully",
 				{ closeable: true, timeout: 5 }
@@ -213,7 +207,6 @@ function updateSummary() {
 			location.reload();
 		},
 		error: function(jqXHR) {
-			console.error("Update summary ERROR:", jqXHR.responseText);
 			const errorMessage =
 				AJS.I18n.getText("tl.response.error") + "\n" + jqXHR.responseText;
 			JIRA.Messages.showErrorMsg(errorMessage, { closeable: true, timeout: 5 });
@@ -260,29 +253,5 @@ function assignUser() {
  *
  * @function
  */
-// AJS.toInit(function () {
-// handle close button
-// AJS.$("#tl-close-button").click(function (e) {
-// 	e.preventDefault();
-// 	AJS.dialog2("#tl-user-dialog").hide();
-// });
-// jQuery(document)
-// 	.off("click.tl", "#tl-close-button")
-// 	.on("click.tl", "#tl-close-button", function (e) {
-// 	e.preventDefault();
-// 	console.log("Close button clicked");
-// 	AJS.dialog2("#tl-user-dialog").hide();
-// 		jQuery("#tl-user-dialog").remove();
-// });
-// 	jQuery("body").off("click", "#tl-close-button"); // сначала убираем старые
-// 	jQuery("body").on("click", "#tl-close-button", function (e) {
-// 		e.preventDefault();
-// 		console.log("Close button clicked");
-//
-// 		// гарантированно убираем диалог
-// 		AJS.dialog2("#tl-user-dialog").hide();
-// 		jQuery("#tl-user-dialog").remove();
-// 		jQuery(".aui-blanket").remove();
-// 	});
-// });
+
 
